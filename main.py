@@ -51,6 +51,7 @@ else:
             imagen_path = os.path.join(directorio_pruebas, archivo)
             rutas_imagenes.append(imagen_path)
     resultados = []
+    df_resultados = pd.DataFrame(resultados)
     # Procesar y predecir para cada imagen en el directorio de pruebas
     if st.button('Presionar aquí para predecir'):
         if rutas_imagenes:
@@ -70,7 +71,7 @@ else:
         else:
             st.write("No se encontraron imágenes en el directorio especificado.")
     # Botón para exportar resultados a CSV
-    if len(resultados)>0:
+    if resultados is not None:
         if st.button('Exportar tabla a CSV'):
             nombre_archivo = 'resultados_predicciones.csv'
             df_resultados.to_csv(nombre_archivo, index=False)
