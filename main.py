@@ -50,12 +50,11 @@ else:
         if archivo.endswith('.jpg') or archivo.endswith('.png'):
             imagen_path = os.path.join(directorio_pruebas, archivo)
             rutas_imagenes.append(imagen_path)
-
+    resultados = []
     # Procesar y predecir para cada imagen en el directorio de pruebas
     if st.button('Presionar aquí para predecir'):
-        resultados = []
         if rutas_imagenes:
-            for ruta_imagen in rutas_imagenes:
+            for ruta_imagen in rutas_imagenes[10]:
                 ruta = cv2.imread(ruta_imagen)
                 nombre_imagen = os.path.basename(ruta_imagen)
                 imagen_procesada = cargar_y_preprocesar_imagen(ruta)
@@ -66,10 +65,11 @@ else:
             st.write("Resultados de las predicciones:")
             st.dataframe(df_resultados)
             
-            # Botón para exportar resultados a CSV
-            if st.button('Exportar tabla a CSV'):
-                nombre_archivo = 'resultados_predicciones.csv'
-                df_resultados.to_csv(nombre_archivo, index=False)
-                st.success(f"Tabla exportada correctamente como '{nombre_archivo}'")
         else:
             st.write("No se encontraron imágenes en el directorio especificado.")
+    # Botón para exportar resultados a CSV
+    if len(resultados)>0:
+        if st.button('Exportar tabla a CSV'):
+            nombre_archivo = 'resultados_predicciones.csv'
+            df_resultados.to_csv(nombre_archivo, index=False)
+            st.success(f"Tabla exportada correctamente como '{nombre_archivo}'")
