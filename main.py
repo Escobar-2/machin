@@ -50,10 +50,9 @@ else:
         if archivo.endswith('.jpg') or archivo.endswith('.png'):
             imagen_path = os.path.join(directorio_pruebas, archivo)
             rutas_imagenes.append(imagen_path)
-
+    resultados = []
     # Procesar y predecir para cada imagen en el directorio de pruebas
     if st.button('Presionar aquí para predecir'):
-        resultados = []
         if rutas_imagenes:
             for ruta_imagen in rutas_imagenes:
                 ruta = cv2.imread(ruta_imagen)
@@ -62,6 +61,7 @@ else:
                 prediccion = modelo.predict(imagen_procesada)
                 resultado = 1 if prediccion[0][0] >= 0.5 else 0
                 resultados.append({'Nombre de la imagen': nombre_imagen, 'score': resultado})
+                break
             df_resultados = pd.DataFrame(resultados)
             st.write("Resultados de las predicciones:")
             st.dataframe(df_resultados)
