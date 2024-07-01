@@ -63,11 +63,11 @@ else:
                 prediccion = modelo.predict(imagen_procesada)
                 resultado = 1 if prediccion[0][0] >= 0.5 else 0
                 resultados.append({'ID': nombre_imagen, 'score': resultado})
-                avance = idx / len(rutas_imagenes) * 100
+                avance = idx / len(rutas_imagenes)
                 barra_progreso.progress(avance)
                 
                 # Mostrar el porcentaje avanzado con decimales
-                st.text(f'Progreso: {avance:.2f}%')
+                st.text(f'Progreso: {(avance*100):.2f}%')
                 
             df_resultados = pd.DataFrame(resultados)
             st.write("Resultados de las predicciones:")
