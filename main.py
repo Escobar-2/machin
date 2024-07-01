@@ -1,71 +1,37 @@
 import os
 import streamlit as st
-import requests
+import cv2
+import numpy as np
+import pandas as pd
+from PIL import Image
 from tensorflow.keras.models import load_model
+
+# Cargar el modelo
+modelo = load_model('modelo_eficiente1.keras')
 
 # Carpeta de las imágenes de prueba
 directorio_pruebas = 'test'
 
-# URL pública de descarga desde Google Drive
-url = 'https://drive.google.com/uc?id=1GHc4_s-WtwA_04Pa2luZLP3sIy7akBIq'
+# Función para cargar y preprocesar una imagen
+def cargar_y_preprocesar_imagen(imagen):
+    imagen = cv2.resize(imagen, (512, 512))
+    imagen = imagen.astype('float32') / 255.0
+    imagen = np.expand_dims(imagen, axis=0)  # No es necesario expandir el eje de canal si la imagen es a color
+    return imagen
 
-# Nombre del archivo local donde se guardará el modelo
-archivo_modelo = 'modelo.keras'
+# Título y descripción en la interfaz de usuario
+st.title('Proyecto final Machine Learning')
+st.write('Detección de retinopatías diabéticas.')
 
-# Verificar si el directorio existe antes de listar archivos
-if not os.path.exists(directorio_pruebas):
-    st.error(f"El directorio {directorio_pruebas} no existe. Verifica la ruta.")
-else:
-    # Lista todos los archivos en el directorio de pruebas
-    archivos = os.listdir(directorio_pruebas)
-    
-    # Lista para almacenar las rutas de las imágenes
-    rutas_imagenes = []
-    
-    # Obtener las rutas de las imágenes y guardarlas en la lista
-    for archivo in archivos:
-        if archivo.endswith('.jpg') or archivo.endswith('.png'):
-            imagen_path = os.path.join(directorio_pruebas, archivo)
-            rutas_imagenes.append(imagen_path)
+# Cargar imágenes subidas por el usuario
+uploaded_files = st.file_uploader("Selecciona una imagen", type=['jpg', 'jpeg', 'png'], accept_multiple_files=True)
+if uploaded_files is not None:
+    for uploaded_file in uploaded_files:
+        file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+        image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+        imagen_preparada = cargar_y_preprocesar_imagen(image)
+        prediccion = modelo.predict(imagen_preparada)
+        resultado = 1 if prediccion[0][0] >= 0.5 else 0
+        original = Image.open(uploaded_file)
+        st.image(original, caption=f'Predicción: {resultado}', use_column_width=True)
 
-    
-    # Función para cargar y preprocesar una imagen
-    def cargar_y_preprocesar_imagen(ruta_imagen):
-        imagen = cv2.imread(ruta_imagen)
-        imagen = cv2.resize(imagen, (512, 512))
-        imagen = imagen.astype('float32') / 255.0
-        imagen = np.expand_dims(imagen, axis=-1)
-        imagen = np.expand_dims(imagen, axis=0)
-    
-        return imagen
-    
-
-    # Función para descargar el archivo desde Google Drive
-    def descargar_desde_google_drive(url, archivo_destino):
-        response = requests.get(url, stream=True)
-        if response.status_code == 200:
-            with open(archivo_destino, 'wb') as f:
-                for chunk in response.iter_content(1024):
-                    f.write(chunk)
-            return True
-        else:
-            return False
-    
-    # Descargar el archivo del modelo desde Google Drive si no está localmente
-    if not os.path.exists(archivo_modelo):
-        if descargar_desde_google_drive(url, archivo_modelo):
-            st.write(f"Archivo descargado correctamente como {archivo_modelo}")
-            # Cargar el modelo desde el archivo descargado
-            modelo = load_model(archivo_modelo)
-            
-            # Ejemplo de uso del modelo en Streamlit
-            st.write("Modelo cargado correctamente. Puedes comenzar a hacer predicciones.")
-        else:
-            st.error("Error al descargar el archivo desde Google Drive. Verifica la URL.")
-    
-    
-    # Imprimir las rutas de las imágenes
-    if rutas_imagenes:
-        st.write("Imagenes cargadas correctamente")
-    else:
-        st.write("No se encontraron imágenes en el directorio especificado.")
