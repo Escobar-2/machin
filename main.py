@@ -55,7 +55,7 @@ else:
     # Procesar y predecir para cada imagen en el directorio de pruebas
     if st.button('Presionar aquí para predecir'):
         if rutas_imagenes:
-            barra_progreso = st.progress(0)
+            barra_progreso = st.progress(0.0)
             for idx, ruta_imagen in enumerate(rutas_imagenes, start=1):
                 ruta = cv2.imread(ruta_imagen)
                 nombre_imagen = os.path.basename(ruta_imagen)
@@ -65,6 +65,9 @@ else:
                 resultados.append({'ID': nombre_imagen, 'score': resultado})
                 avance = idx / len(rutas_imagenes) * 100
                 barra_progreso.progress(avance)
+                
+                # Mostrar el porcentaje avanzado con decimales
+                st.text(f'Progreso: {avance:.2f}%')
                 
             df_resultados = pd.DataFrame(resultados)
             st.write("Resultados de las predicciones:")
