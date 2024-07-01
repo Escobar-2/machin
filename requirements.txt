@@ -1,0 +1,8 @@
+tensorflow
+keras
+requests
+pillow
+pandas
+tqdm
+opencv-python-headless
+gdown
