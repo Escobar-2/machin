@@ -55,13 +55,17 @@ else:
     # Procesar y predecir para cada imagen en el directorio de pruebas
     if st.button('Presionar aquí para predecir'):
         if rutas_imagenes:
-            for ruta_imagen in rutas_imagenes:
+            barra_progreso = st.progress(0)
+            for idx, ruta_imagen in enumerate(rutas_imagenes, start=1):
                 ruta = cv2.imread(ruta_imagen)
                 nombre_imagen = os.path.basename(ruta_imagen)
                 imagen_procesada = cargar_y_preprocesar_imagen(ruta)
                 prediccion = modelo.predict(imagen_procesada)
                 resultado = 1 if prediccion[0][0] >= 0.5 else 0
                 resultados.append({'ID': nombre_imagen, 'score': resultado})
+                avance = idx / len(rutas_imagenes) * 100
+                barra_progreso.progress(avance)
+                
             df_resultados = pd.DataFrame(resultados)
             st.write("Resultados de las predicciones:")
             st.dataframe(df_resultados)
