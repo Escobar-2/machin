@@ -61,7 +61,7 @@ else:
                 imagen_procesada = cargar_y_preprocesar_imagen(ruta)
                 prediccion = modelo.predict(imagen_procesada)
                 resultado = 1 if prediccion[0][0] >= 0.5 else 0
-                resultados.append({'Nombre de la imagen': nombre_imagen, 'score': resultado})
+                resultados.append({'ID': nombre_imagen, 'score': resultado})
             df_resultados = pd.DataFrame(resultados)
             st.write("Resultados de las predicciones:")
             st.dataframe(df_resultados)
@@ -72,6 +72,9 @@ else:
     # Botón para exportar resultados a CSV
     if resultados is not None:
         if st.button('Exportar tabla a CSV'):
+            # Crear el archivo CSV en memoria
             nombre_archivo = 'resultados_predicciones.csv'
-            df_resultados.to_csv(nombre_archivo, index=False)
+            csv = df_resultados.to_csv(index=False)
+            # Generar el botón de descarga
+            st.download_button(label='Descargar CSV', data=csv, file_name=nombre_archivo, mime='text/csv')
             st.success(f"Tabla exportada correctamente como '{nombre_archivo}'")
