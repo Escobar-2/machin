@@ -72,9 +72,11 @@ else:
     # Botón para exportar resultados a CSV
     if resultados is not None:
         if st.button('Exportar tabla a CSV'):
+            new = df_resultados.copy()
+            st.dataframe(new)
             # Crear el archivo CSV en memoria
             nombre_archivo = 'resultados_predicciones.csv'
-            csv = df_resultados.to_csv(index=False)
+            csv = new.to_csv(index=False)
             # Generar el botón de descarga
             st.download_button(label='Descargar CSV', data=csv, file_name=nombre_archivo, mime='text/csv')
             st.success(f"Tabla exportada correctamente como '{nombre_archivo}'")
