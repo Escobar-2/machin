@@ -35,3 +35,41 @@ if uploaded_files is not None:
         original = Image.open(uploaded_file)
         st.image(original, caption=f'Predicción: {resultado}', use_column_width=True)
 
+# Verificar si el directorio existe antes de listar archivos
+if not os.path.exists(directorio_pruebas):
+    st.error(f"El directorio {directorio_pruebas} no existe. Verifica la ruta.")
+else:
+    # Lista todos los archivos en el directorio de pruebas
+    archivos = os.listdir(directorio_pruebas)
+    
+    # Lista para almacenar las rutas de las imágenes
+    rutas_imagenes = []
+    
+    # Obtener las rutas de las imágenes y guardarlas en la lista
+    for archivo in archivos:
+        if archivo.endswith('.jpg') or archivo.endswith('.png'):
+            imagen_path = os.path.join(directorio_pruebas, archivo)
+            rutas_imagenes.append(imagen_path)
+
+    # Procesar y predecir para cada imagen en el directorio de pruebas
+    if st.button('Presionar aquí para predecir'):
+        resultados = []
+        if rutas_imagenes:
+            for ruta_imagen in rutas_imagenes:
+                ruta = cv2.imread(ruta_imagen)
+                nombre_imagen = os.path.basename(ruta_imagen)
+                imagen_procesada = cargar_y_preprocesar_imagen(ruta)
+                prediccion = modelo.predict(imagen_procesada)
+                resultado = 1 if prediccion[0][0] >= 0.5 else 0
+                resultados.append({'Nombre de la imagen': nombre_imagen, 'score': resultado})
+            df_resultados = pd.DataFrame(resultados)
+            st.write("Resultados de las predicciones:")
+            st.dataframe(df_resultados)
+            
+            # Botón para exportar resultados a CSV
+            if st.button('Exportar tabla a CSV'):
+                nombre_archivo = 'resultados_predicciones.csv'
+                df_resultados.to_csv(nombre_archivo, index=False)
+                st.success(f"Tabla exportada correctamente como '{nombre_archivo}'")
+        else:
+            st.write("No se encontraron imágenes en el directorio especificado.")
