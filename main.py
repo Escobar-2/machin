@@ -16,7 +16,7 @@ directorio_pruebas = 'test'
 def cargar_y_preprocesar_imagen(imagen):
     imagen = cv2.resize(imagen, (512, 512))
     imagen = imagen.astype('float32') / 255.0
-    imagen = np.expand_dims(imagen, axis=0)  # No es necesario expandir el eje de canal si la imagen es a color
+    imagen = np.expand_dims(imagen, axis=0)  
     return imagen
 
 # Título y descripción en la interfaz de usuario
