@@ -33,7 +33,7 @@ if uploaded_files is not None:
         prediccion = modelo.predict(imagen_preparada)
         resultado = "" if prediccion[0][0] >= 0.5 else "no "
         original = Image.open(uploaded_file)
-        st.image(original, caption='la imagen subida refleja que el ojo '+resultado+'presenta renopatia diabetica', use_column_width=True)
+        st.image(original, caption='La imagen subida refleja que el ojo '+resultado+'presenta renopatia diabetica', use_column_width=True)
 st.write('Este boton comienza la prediccion del test para la actividad kaggle')
 # Verificar si el directorio existe antes de listar archivos
 if not os.path.exists(directorio_pruebas):
