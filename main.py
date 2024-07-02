@@ -31,10 +31,10 @@ if uploaded_files is not None:
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
         imagen_preparada = cargar_y_preprocesar_imagen(image)
         prediccion = modelo.predict(imagen_preparada)
-        resultado = 1 if prediccion[0][0] >= 0.5 else 0
+        resultado = "" if prediccion[0][0] >= 0.5 else "no "
         original = Image.open(uploaded_file)
-        st.image(original, caption=f'Predicción: {resultado}', use_column_width=True)
-
+        st.image(original, caption='la imagen subida refleja que el ojo '+resultado+'presenta renopatia diabetica', use_column_width=True)
+st.write('Este boton comienza la prediccion del test para la actividad kaggle')
 # Verificar si el directorio existe antes de listar archivos
 if not os.path.exists(directorio_pruebas):
     st.error(f"El directorio {directorio_pruebas} no existe. Verifica la ruta.")
